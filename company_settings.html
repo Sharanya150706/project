@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Settings | BillNova</title>
+    
+    <!-- Base Styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    <style>
+        /* Custom Neon Glass Settings UI */
+        .settings-page {
+            position: relative;
+            z-index: 1;
+            width: min(900px, calc(100% - 40px));
+            margin: 40px auto;
+            padding-bottom: 40px;
+        }
+
+        .settings-card {
+            padding: 36px;
+            border-radius: var(--bn-radius-lg, 24px);
+            background: linear-gradient(145deg, rgba(18, 47, 103, 0.74), rgba(5, 16, 45, 0.82));
+            border: 1px solid rgba(100, 180, 255, 0.28);
+            box-shadow: 0 0 25px rgba(35, 120, 255, 0.16), 0 25px 70px rgba(0, 0, 0, 0.42);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(110, 150, 255, 0.16);
+            padding-bottom: 20px;
+        }
+
+        .settings-icon {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            font-size: 24px;
+            color: var(--bn-cyan, #22d3ee);
+        }
+
+        .settings-title h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .settings-title p {
+            color: var(--bn-muted, #9aafd4);
+            font-size: 13px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #dce8fa;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            background: rgba(2, 12, 38, 0.58) !important;
+            border: 1px solid rgba(100, 160, 255, 0.20) !important;
+            color: #ffffff !important;
+            outline: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: rgba(85, 190, 255, 0.75) !important;
+            box-shadow: 0 0 0 3px rgba(50, 145, 255, 0.15), 0 0 18px rgba(40, 140, 255, 0.2) !important;
+        }
+
+        .form-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+        }
+
+        .save-btn {
+            min-height: 48px;
+            padding: 0 28px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #1954d8, #31c7ef) !important;
+            border: 1px solid rgba(130, 235, 255, 0.65) !important;
+            border-radius: 12px !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(45, 160, 255, 0.35);
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(65, 185, 255, 0.65);
+        }
+
+        @media (max-width: 650px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Glowing Effects -->
+    <div class="bn-bg-glow glow-one" style="position:fixed; top:-100px; left:50%; transform:translateX(-50%); width:500px; height:280px; background:#155cff; filter:blur(120px); opacity:0.25; pointer-events:none;"></div>
+    
+    <!-- Navbar -->
+    <nav class="bn-navbar" style="padding: 18px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--bn-border); background: rgba(7, 11, 31, 0.8); backdrop-filter: blur(16px);">
+        <div class="bn-brand">
+            <a href="{{ url_for('dashboard') }}" class="bn-brand-name" style="font-size: 24px; font-weight: 800; color: #ffffff;">
+                Bill<span style="color: var(--bn-cyan, #22d3ee);">Nova</span>
+            </a>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="bn-primary-btn" style="text-decoration:none;">
+            ← Back to Dashboard
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="settings-page">
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="bn-flash-message {{ category }}" style="margin-bottom:20px; padding:14px; border-radius:12px; background:rgba(34,211,238,0.1); border:1px solid rgba(34,211,238,0.3); color:#fff;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="settings-card">
+            
+            <div class="settings-header">
+                <div class="settings-icon">🏢</div>
+                <div class="settings-title">
+                    <h2>Company Profile Settings</h2>
+                    <p>Update your company profile information used in billing and invoices.</p>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('company_settings') }}" enctype="multipart/form-data">
+                <div class="form-grid">
+                    
+                    <div class="form-group">
+                        <label>Company Name *</label>
+                        <input type="text" name="company_name" value="{{ company.company_name if company else '' }}" placeholder="Enter company name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Owner Name</label>
+                        <input type="text" name="owner_name" value="{{ company.owner_name if company else '' }}" placeholder="Enter owner name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="phone" value="{{ company.phone if company else '' }}" placeholder="Enter phone number">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" value="{{ company.email if company else '' }}" placeholder="Enter email address">
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="save-btn">
+                        <span>💾</span> Save Company Settings
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

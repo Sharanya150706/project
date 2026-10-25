@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Welcome | BillNova</title>
+
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/welcome.css') }}">
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+    <main class="welcome-page">
+
+        <!-- BACKGROUND GLOWS -->
+        <div class="bg-glow glow-one"></div>
+        <div class="bg-glow glow-two"></div>
+
+
+        <!-- SPARKLING PARTICLES -->
+        <div id="particles"></div>
+
+
+        <!-- FLOATING PAPERS -->
+        <div class="floating-paper paper-one"></div>
+        <div class="floating-paper paper-two"></div>
+        <div class="floating-paper paper-three"></div>
+        <div class="floating-paper paper-four"></div>
+
+
+        <!-- LEFT INVOICE -->
+        <div class="invoice-card invoice-left">
+
+            <div class="invoice-header">
+
+                <div class="invoice-brand">
+
+                    <img src="{{ url_for('static', filename='images/billnova_logo.png') }}"
+                        alt="BillNova">
+
+                    <span>INVOICE</span>
+
+                </div>
+
+                <div class="invoice-number">
+                    INV-2026-001
+                </div>
+
+            </div>
+
+
+            <div class="invoice-details">
+
+                <div>
+
+                    <strong>Bill To:</strong>
+
+                    <p>ABC Enterprises</p>
+                    <p>abc@company.com</p>
+
+                </div>
+
+
+                <div class="invoice-date">
+
+                    <strong>Date</strong>
+
+                    <p>07 Sep 2026</p>
+
+                </div>
+
+            </div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+                        <td>Web Design</td>
+                        <td>1</td>
+                        <td>₹12,500</td>
+                        <td>₹12,500</td>
+                    </tr>
+
+                    <tr>
+                        <td>Hosting</td>
+                        <td>1</td>
+                        <td>₹2,500</td>
+                        <td>₹2,500</td>
+                    </tr>
+
+                    <tr>
+                        <td>Support</td>
+                        <td>1</td>
+                        <td>₹3,000</td>
+                        <td>₹3,000</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+
+            <div class="invoice-summary">
+
+                <div>
+                    <span>Subtotal</span>
+                    <strong>₹18,000</strong>
+                </div>
+
+                <div>
+                    <span>GST (18%)</span>
+                    <strong>₹3,240</strong>
+                </div>
+
+                <div class="invoice-grand-total">
+                    <span>Total</span>
+                    <strong>₹21,240</strong>
+                </div>
+
+            </div>
+
+
+            <div class="invoice-footer">
+
+                <span>Thank you for your business!</span>
+
+                <strong>✦</strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT INVOICE -->
+        <div class="invoice-card invoice-right">
+
+            <div class="invoice-header">
+
+                <div class="invoice-brand">
+
+                    <img src="{{ url_for('static', filename='images/billnova_logo.png') }}"
+                        alt="BillNova">
+
+                    <span>INVOICE</span>
+
+                </div>
+
+                <div class="invoice-number">
+                    INV-2026-002
+                </div>
+
+            </div>
+
+
+            <div class="invoice-details">
+
+                <div>
+
+                    <strong>Bill To:</strong>
+
+                    <p>XYZ Solutions</p>
+                    <p>xyz@solutions.com</p>
+
+                </div>
+
+
+                <div class="invoice-date">
+
+                    <strong>Date</strong>
+
+                    <p>07 Sep 2026</p>
+
+                </div>
+
+            </div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+                        <td>Product Design</td>
+                        <td>1</td>
+                        <td>₹15,000</td>
+                        <td>₹15,000</td>
+                    </tr>
+
+                    <tr>
+                        <td>UI/UX Development</td>
+                        <td>1</td>
+                        <td>₹8,000</td>
+                        <td>₹8,000</td>
+                    </tr>
+
+                    <tr>
+                        <td>Testing & QA</td>
+                        <td>1</td>
+                        <td>₹4,000</td>
+                        <td>₹4,000</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+
+            <div class="invoice-summary">
+
+                <div>
+                    <span>Subtotal</span>
+                    <strong>₹27,000</strong>
+                </div>
+
+                <div>
+                    <span>GST (18%)</span>
+                    <strong>₹4,860</strong>
+                </div>
+
+                <div class="invoice-grand-total">
+                    <span>Total</span>
+                    <strong>₹31,860</strong>
+                </div>
+
+            </div>
+
+
+            <div class="invoice-footer">
+
+                <span>Thank you for your business!</span>
+
+                <strong>✦</strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- SALES MONITOR -->
+        <div class="sales-monitor">
+
+            <div class="monitor-screen">
+
+                <div class="monitor-top">
+
+                    <div>
+
+                        <p>Total Sales</p>
+
+                        <h2>₹1,24,750</h2>
+
+                    </div>
+
+                    <strong>↑ 12.5%</strong>
+
+                </div>
+
+
+                <div class="chart">
+
+                    <div style="height: 42%;"></div>
+                    <div style="height: 65%;"></div>
+                    <div style="height: 88%;"></div>
+                    <div style="height: 56%;"></div>
+                    <div style="height: 82%;"></div>
+                    <div style="height: 66%;"></div>
+                    <div style="height: 92%;"></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="monitor-neck"></div>
+
+            <div class="monitor-base"></div>
+
+        </div>
+
+
+        <!-- CALCULATOR -->
+        <div class="calculator">
+
+            <div class="calc-display">
+                ₹24,750
+            </div>
+
+
+            <div class="calc-buttons">
+
+                <span>7</span>
+                <span>8</span>
+                <span>9</span>
+
+                <span>4</span>
+                <span>5</span>
+                <span>6</span>
+
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+
+                <span>0</span>
+                <span>.</span>
+                <span>=</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- FLOATING PEN -->
+        <div class="pen">
+
+            <div class="pen-tip"></div>
+            <div class="pen-bottom"></div>
+            <div class="pen-body"></div>
+            <div class="pen-top"></div>
+
+        </div>
+
+
+        <!-- ANALYTICS CARD -->
+        <div class="analytics-card">
+
+            <div class="analytics-top">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+
+            <div class="analytics-content">
+
+                <div class="pie-chart"></div>
+
+
+                <div class="analytics-bars">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </div>
+
+            </div>
+
+
+            <p>Outstanding</p>
+
+            <h2>₹18,250</h2>
+
+        </div>
+
+
+        <!-- CENTER BRAND SECTION -->
+        <section class="brand-section">
+
+            <div class="main-logo">
+
+                <img src="{{ url_for('static', filename='images/billnova_logo.png') }}"
+                    alt="BillNova Logo"
+                    class="billnova-logo">
+
+            </div>
+
+
+            <h1>
+                Bill<span>Nova</span>
+            </h1>
+
+
+            <p class="subtitle">
+                SMART BILLING MANAGEMENT
+            </p>
+
+
+            <div class="brand-divider">
+
+                <span></span>
+                <i></i>
+                <span></span>
+
+            </div>
+
+
+            <p class="tagline">
+
+                Turning Every Transaction
+
+                <br>
+
+                into <strong>Progress.</strong>
+
+                <b>✦</b>
+
+            </p>
+
+        </section>
+
+
+        <!-- GRID FLOOR -->
+        <div class="grid-floor"></div>
+
+
+        <!-- ENTER BUTTON -->
+        <a href="/login" class="enter-button">
+
+            Enter BillNova
+
+            <span>→</span>
+
+        </a>
+
+    </main>
+
+
+    <!-- PARTICLES SCRIPT -->
+    <script>
+
+        const particles =
+            document.getElementById("particles");
+
+
+        const totalParticles = 55;
+
+
+        for (
+            let i = 0;
+            i < totalParticles;
+            i++
+        ) {
+
+            const particle =
+                document.createElement("span");
+
+
+            particle.classList.add("particle");
+
+
+            const size =
+                Math.random() * 3 + 1;
+
+
+            particle.style.width =
+                size + "px";
+
+
+            particle.style.height =
+                size + "px";
+
+
+            particle.style.left =
+                Math.random() * 100 + "%";
+
+
+            particle.style.top =
+                Math.random() * 90 + "%";
+
+
+            particle.style.animationDuration =
+                Math.random() * 4 + 4 + "s";
+
+
+            particle.style.animationDelay =
+                Math.random() * 5 + "s";
+
+
+            particles.appendChild(particle);
+
+        }
+
+    </script>
+
+</body>
+
+</html>

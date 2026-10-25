@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BillNova - Reports</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/billing.css') }}">
+</head>
+
+<body>
+
+    <!-- ================= BACKGROUND EFFECTS ================= -->
+
+    <div class="bn-particles"></div>
+
+    <div class="bg-decoration">
+        <div class="invoice-shape"></div>
+        <div class="invoice-shape"></div>
+        <div class="chart-shape"></div>
+        <div class="chart-shape"></div>
+    </div>
+
+    <div class="bn-grid-floor"></div>
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="bn-navbar">
+
+        <div class="bn-brand">
+
+            <div class="bn-logo">
+
+                <svg viewBox="0 0 64 64"
+                     xmlns="http://www.w3.org/2000/svg"
+                     aria-label="BillNova Logo">
+
+                    <defs>
+                        <linearGradient id="reportsLogoGradient"
+                                        x1="0"
+                                        y1="0"
+                                        x2="1"
+                                        y2="1">
+
+                            <stop offset="0%" stop-color="#38bdf8"/>
+                            <stop offset="50%" stop-color="#2563eb"/>
+                            <stop offset="100%" stop-color="#6366f1"/>
+
+                        </linearGradient>
+                    </defs>
+
+                    <rect x="8"
+                          y="5"
+                          width="48"
+                          height="54"
+                          rx="10"
+                          fill="url(#reportsLogoGradient)"/>
+
+                    <path d="M18 18H46"
+                          stroke="white"
+                          stroke-width="4"
+                          stroke-linecap="round"/>
+
+                    <path d="M18 27H40"
+                          stroke="white"
+                          stroke-width="4"
+                          stroke-linecap="round"/>
+
+                    <path d="M18 36H34"
+                          stroke="white"
+                          stroke-width="4"
+                          stroke-linecap="round"/>
+
+                    <path d="M18 45H29"
+                          stroke="white"
+                          stroke-width="4"
+                          stroke-linecap="round"/>
+
+                    <path d="M43 40L48 45L54 34"
+                          stroke="white"
+                          stroke-width="4"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          fill="none"/>
+
+                </svg>
+
+            </div>
+
+            <span>BillNova</span>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= MAIN CONTAINER ================= -->
+
+    <main class="bn-page-container">
+
+
+        <!-- ================= PAGE HEADER ================= -->
+
+        <section class="bn-page-header">
+
+            <div>
+
+                <h1>
+                    📊 Business Reports
+                </h1>
+
+                <p>
+                    Track your sales, invoices, customers and business performance
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= STATISTICS ================= -->
+
+        <section class="bn-stats-grid">
+
+
+            <!-- TOTAL SALES -->
+
+            <div class="bn-stat-card">
+
+                <div class="bn-stat-icon">
+                    💰
+                </div>
+
+                <div class="bn-stat-content">
+
+                    <span>
+                        Total Sales
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(total_sales) }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL INVOICES -->
+
+            <div class="bn-stat-card">
+
+                <div class="bn-stat-icon">
+                    🧾
+                </div>
+
+                <div class="bn-stat-content">
+
+                    <span>
+                        Total Invoices
+                    </span>
+
+                    <strong>
+                        {{ total_invoices }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL CUSTOMERS -->
+
+            <div class="bn-stat-card">
+
+                <div class="bn-stat-icon">
+                    👥
+                </div>
+
+                <div class="bn-stat-content">
+
+                    <span>
+                        Total Customers
+                    </span>
+
+                    <strong>
+                        {{ total_customers }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL PRODUCTS -->
+
+            <div class="bn-stat-card">
+
+                <div class="bn-stat-icon">
+                    📦
+                </div>
+
+                <div class="bn-stat-content">
+
+                    <span>
+                        Total Products
+                    </span>
+
+                    <strong>
+                        {{ total_products }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- ================= GST SUMMARY ================= -->
+
+        <section class="bn-glass-card">
+
+            <div class="bn-section-title">
+
+                <div>
+
+                    <h2>
+                        🧮 GST Summary
+                    </h2>
+
+                    <p>
+                        Overview of GST collected from your invoices
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="bn-gst-grid">
+
+
+                <!-- CGST -->
+
+                <div class="bn-gst-box">
+
+                    <span>
+                        CGST Collected
+                    </span>
+
+                    <small>
+                        9%
+                    </small>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(total_cgst) }}
+                    </strong>
+
+                </div>
+
+
+                <!-- SGST -->
+
+                <div class="bn-gst-box">
+
+                    <span>
+                        SGST Collected
+                    </span>
+
+                    <small>
+                        9%
+                    </small>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(total_sgst) }}
+                    </strong>
+
+                </div>
+
+
+                <!-- TOTAL GST -->
+
+                <div class="bn-gst-box">
+
+                    <span>
+                        Total GST
+                    </span>
+
+                    <small>
+                        18%
+                    </small>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(total_gst) }}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= MAIN REPORT GRID ================= -->
+
+        <section class="bn-report-grid">
+
+
+            <!-- ================= RECENT INVOICES ================= -->
+
+            <div class="bn-glass-card">
+
+                <div class="bn-section-title">
+
+                    <div>
+
+                        <h2>
+                            🧾 Recent Invoices
+                        </h2>
+
+                        <p>
+                            Latest billing activity
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bn-table-wrapper">
+
+                    <table class="bn-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Invoice
+                                </th>
+
+                                <th>
+                                    Customer
+                                </th>
+
+                                <th>
+                                    Amount
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for invoice in recent_invoices %}
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        #{{ invoice.id }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {{ invoice.customer_name }}
+                                </td>
+
+                                <td class="bn-amount">
+                                    ₹{{ "%.2f"|format(invoice.grand_total) }}
+                                </td>
+
+                                <td>
+                                    {{ invoice.created_at }}
+                                </td>
+
+                            </tr>
+
+                            {% else %}
+
+                            <tr>
+
+                                <td colspan="4"
+                                    class="bn-empty-cell">
+
+                                    No invoices available.
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= TOP PRODUCTS ================= -->
+
+            <div class="bn-glass-card">
+
+                <div class="bn-section-title">
+
+                    <div>
+
+                        <h2>
+                            🏆 Top Products
+                        </h2>
+
+                        <p>
+                            Best performing products
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bn-products-list">
+
+                    {% for product in top_products %}
+
+                    <div class="bn-product-item">
+
+                        <div class="bn-product-info">
+
+                            <strong>
+                                {{ product.product_name }}
+                            </strong>
+
+                            <span>
+                                Sales:
+                                ₹{{ "%.2f"|format(product.total_amount) }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="bn-product-badge">
+
+                            {{ product.total_quantity }}
+                            sold
+
+                        </div>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="bn-empty-state">
+
+                        <div class="bn-empty-icon">
+                            📦
+                        </div>
+
+                        <p>
+                            No sales data available.
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <!-- ================= BOTTOM NAVIGATION ================= -->
+
+    <div class="bn-page-navigation">
+
+        <a href="{{ url_for('company_settings') }}"
+           class="bn-nav-btn bn-prev-btn">
+
+            ← PREVIOUS
+
+        </a>
+
+
+        <a href="{{ url_for('dashboard') }}"
+           class="bn-nav-btn bn-next-btn">
+
+            NEXT →
+
+        </a>
+
+    </div>
+
+
+</body>
+
+</html>
