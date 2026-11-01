@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-import mysql.connector
+
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime
 import os
 import uuid
+import pymysql
+import pymysql.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -26,14 +28,14 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # =========================================================
 
 def get_db_connection():
-    conn = mysql.connector.connect(
+    return pymysql.connect(
         host=os.getenv("MYSQLHOST", "127.0.0.1"),
         user=os.getenv("MYSQLUSER", "root"),
         password=os.getenv("MYSQLPASSWORD", "root123"),
         database=os.getenv("MYSQLDATABASE", "billnova"),
         port=int(os.getenv("MYSQLPORT", 3306)),
-        ssl_disabled=False,
-        ssl_verify_identity=False
+        cursorclass=pymysql.cursors.DictCursor,
+        ssl={'ssl': {}}
     )
     cursor = conn.cursor()
     cursor.execute("SET SESSION sql_mode=''")

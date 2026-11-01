@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         link.addEventListener("click", function () {
             if (window.innerWidth <= 900) closeSidebar();
         });
-    });
+    }
 
     window.addEventListener("resize", function () {
         if (window.innerWidth > 900) closeSidebar();
