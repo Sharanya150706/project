@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Invoice - {{ invoice.invoice_number or ('INV-' ~ invoice.id) }}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { background: #525659; color: #000000; font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; margin: 0; }
+        .page-container { max-width: 850px; margin: 0 auto; background: #ffffff; padding: 25px; border: 1px solid #1a1a1a; box-shadow: 0 5px 25px rgba(0,0,0,0.3); }
+        
+        .header-table, .info-table, .items-table, .bottom-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .header-table td, .info-table td, .items-table th, .items-table td, .bottom-table td { border: 1px solid #1a1a1a; padding: 6px 8px; font-size: 13px; vertical-align: top; }
+        
+        .title-hdr { text-align: center; font-weight: 800; font-size: 14px; letter-spacing: 1px; border-bottom: 1px solid #000; padding-bottom: 2px; }
+        .company-name { font-size: 26px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; }
+        
+        .items-table th { background: #f1f5f9; text-align: center; font-size: 11px; text-transform: uppercase; }
+        
+        .action-bar { max-width: 850px; margin: 0 auto 15px auto; display: flex; justify-content: space-between; align-items: center; }
+        .btn-print { background: #1954d8; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        
+        @media print {
+            body { background: white !important; padding: 0 !important; }
+            .page-container { border: 1px solid #000 !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; }
+            .action-bar { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="action-bar">
+        <a href="{{ url_for('invoices') }}" style="color:#ffffff; text-decoration:none; font-weight:bold;">← Back to Invoices</a>
+        <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+
+    <div class="page-container">
+        
+        <div class="title-hdr">TAX INVOICE</div>
+
+        <!-- Header Section -->
+        <table class="header-table" style="margin-top: 5px;">
+            <tr>
+                <td style="width: 20%; text-align: center; vertical-align: middle;">
+                    {% if company and company.logo %}
+                        <img src="{{ url_for('static', filename=company.logo) }}" alt="Company Logo" style="max-height: 70px; max-width: 100%;">
+                    {% else %}
+                        <div style="font-size: 22px; font-weight: 900; border: 2px solid #000; padding: 8px;">LOGOFSC</div>
+                    {% endif %}
+                </td>
+                <td style="width: 50%;">
+                    <h1 class="company-name">{{ company.company_name or 'FOUR SQUARE COMPONENTS' }}</h1>
+                    <div style="font-size: 11px; margin-top: 4px;">
+                        {{ company.address or 'Regd. Office: 1267, Navdurga Chawl, Dhaniv Baug, Nallasopara (East), Palghar - 401208.' }}<br>
+                        Phone: {{ company.phone or '+91 9869532693 / 9823580976' }}<br>
+                        Email: {{ company.email or 'foursquarecomponent@gmail.com' }}
+                    </div>
+                </td>
+                <td style="width: 30%; font-size: 12px; line-height: 1.5;">
+                    <strong>GST Invoice No.:</strong> {{ invoice.invoice_number or ('4641') }}<br>
+                    <strong>Date:</strong> {{ invoice.created_at or '21/10/26' }}<br>
+                    <strong>Challan No.:</strong> {{ invoice.challan_no or '' }}<br>
+                    <strong>P.O. No.:</strong> {{ invoice.po_no or '' }}<br>
+                    <strong>Vehicle No.:</strong> {{ invoice.vehicle_no or '' }}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Client & GSTIN Details -->
+        <table class="info-table">
+            <tr>
+                <td style="width: 65%;">
+                    <strong>M/s.</strong> <span style="font-size: 15px; font-weight: bold;">{{ invoice.customer_name or 'Shavisoy Electronics P. Ltd' }}</span><br>
+                    <div style="margin-top: 4px;">{{ invoice.customer_address or 'Ambernath (E)' }}</div>
+                    <div style="margin-top: 6px;"><strong>Party's GSTIN:</strong> {{ invoice.customer_gstin or '27AABCU5652M1ZR' }}</div>
+                </td>
+                <td style="width: 35%;">
+                    <strong>State Code:</strong> {{ invoice.customer_state_code or '27' }}<br><br>
+                    <strong>GSTIN:</strong> <span style="font-weight: bold;">{{ company.gstin or '27AJTPM2014N1ZS' }}</span><br>
+                    <strong>State Code:</strong> {{ company.state_code or '27' }}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Items Table -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 6%;">SR. NO.</th>
+                    <th style="width: 44%;">DESCRIPTION</th>
+                    <th style="width: 12%;">HSN CODE</th>
+                    <th style="width: 10%;">QTY.</th>
+                    <th style="width: 13%;">RATE (₹)</th>
+                    <th style="width: 15%;">AMOUNT (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set items_list = items if items else [invoice] %}
+                {% for item in items_list %}
+                <tr style="height: 38px;">
+                    <td style="text-align: center;">{{ loop.index }}</td>
+                    <td><strong>{{ item.product_name or 'Item Description' }}</strong></td>
+                    <td style="text-align: center;">{{ item.hsn_code or '8532' }}</td>
+                    <td style="text-align: center;">{{ item.quantity or 1 }}</td>
+                    <td style="text-align: right;">{{ "%.2f"|format((item.price or item.unit_price or 0)|float) }}</td>
+                    <td style="text-align: right; font-weight: bold;">{{ "%.2f"|format((item.subtotal or item.amount or 0)|float) }}</td>
+                </tr>
+                {% endfor %}
+
+                <!-- Blank Rows to match Physical Receipt Height -->
+                {% for r in range(4 - (items_list|length)) %}
+                <tr style="height: 35px;">
+                    <td></td><td></td><td></td><td></td><td></td><td></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- GST Math Breakdown Footer Table -->
+        {% set raw_subtotal = (invoice.subtotal or 0)|float %}
+        {% set raw_cgst = (invoice.cgst or (invoice.total_gst / 2) or 0)|float %}
+        {% set raw_sgst = (invoice.sgst or (invoice.total_gst / 2) or 0)|float %}
+        {% set raw_igst = (invoice.igst or 0)|float %}
+        {% set raw_grand_total = (invoice.grand_total or invoice.total or 0)|float %}
+
+        <table class="bottom-table">
+            <tr>
+                <td style="width: 55%; vertical-align: bottom;">
+                    <div style="font-size: 11px; line-height: 1.4;">
+                        1) The payment should be made on demand.<br>
+                        2) Goods once sold will not be taken back.<br>
+                        3) Interest @ 24% p.a. will be charged if bill is not paid on due date.<br>
+                        4) Subject to Local Jurisdiction.
+                    </div>
+                    <div style="margin-top: 10px; border: 1px solid #000; padding: 6px; font-size: 11px; background: #fafafa;">
+                        <strong>Bank Detail:</strong><br>
+                        {{ company.bank_name or 'IDBI BANK - Siddhivinayak Complex, Station Road' }}<br>
+                        <strong>A/c No.:</strong> {{ company.account_number or '0662102000025799' }} | <strong>IFSC:</strong> {{ company.ifsc_code or 'IBKL0000662' }}
+                    </div>
+                </td>
+                <td style="width: 45%; padding: 0;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <tr>
+                            <td style="border: none; border-bottom: 1px solid #000;"><strong>Total Amount Before Tax</strong></td>
+                            <td style="border: none; border-bottom: 1px solid #000; text-align: right; font-weight: bold;">₹{{ "%.2f"|format(raw_subtotal) }}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; border-bottom: 1px solid #000;">Add : CGST (9%)</td>
+                            <td style="border: none; border-bottom: 1px solid #000; text-align: right;">₹{{ "%.2f"|format(raw_cgst) }}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; border-bottom: 1px solid #000;">Add : SGST (9%)</td>
+                            <td style="border: none; border-bottom: 1px solid #000; text-align: right;">₹{{ "%.2f"|format(raw_sgst) }}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; border-bottom: 1px solid #000;">Add : IGST</td>
+                            <td style="border: none; border-bottom: 1px solid #000; text-align: right;">₹{{ "%.2f"|format(raw_igst) }}</td>
+                        </tr>
+                        <tr style="font-size: 14px; background: #f8fafc;">
+                            <td style="border: none;"><strong>TOTAL AMOUNT</strong></td>
+                            <td style="border: none; text-align: right; font-weight: 900; color: #1954d8;">₹{{ "%.2f"|format(raw_grand_total) }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>Rupees in words:</strong> <span style="font-style: italic; font-size: 14px; font-weight: bold;">{{ amount_words }}</span>
+                        </div>
+                        <div style="text-align: right; margin-top: 15px;">
+                            For <strong>{{ company.company_name or 'FOUR SQUARE COMPONENTS' }}</strong><br><br><br>
+                            <span>Authorised Signatory Proprietor</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+</body>
+</html>

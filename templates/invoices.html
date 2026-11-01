@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices Directory | BillNova</title>
+    <style>
+        * { box-sizing: border-box; }
+        body.bn-app {
+            background: #04091e;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            overflow-x: hidden; position: relative;
+        }
+
+        .bn-grid-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(49, 199, 239, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(49, 199, 239, 0.04) 1px, transparent 1px);
+            background-size: 38px 38px; z-index: 0; pointer-events: none;
+        }
+
+        .bn-app-container { position: relative; z-index: 2; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* Topbar Header */
+        .bn-topbar {
+            height: 68px; padding: 0 28px; display: flex; align-items: center; justify-content: space-between;
+            background: #060b1e; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .bn-topbar-left { display: flex; align-items: center; gap: 18px; }
+
+        .bn-hamburger-btn {
+            width: 38px; height: 38px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px;
+            color: #ffffff; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 18px; transition: all 0.2s ease;
+        }
+        .bn-hamburger-btn:hover { background: rgba(255, 255, 255, 0.12); }
+
+        .bn-brand-group { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .bn-logo-box {
+            width: 36px; height: 36px; background: #0c1838;
+            border: 1px solid rgba(49, 199, 239, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 15px rgba(49, 199, 239, 0.5);
+        }
+        .bn-brand-title { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+        .bn-brand-title span:first-child { color: #ffffff; }
+        .bn-brand-title span:last-child { color: #31c7ef; text-shadow: 0 0 12px rgba(49, 199, 239, 0.6); }
+
+        .bn-topbar-right { display: flex; align-items: center; gap: 20px; }
+        .bn-system-online { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #8292b4; }
+        .bn-online-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
+
+        .bn-settings-btn {
+            display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px;
+            color: #ffffff; font-size: 13px; font-weight: 700; text-decoration: none;
+        }
+
+        /* Slide Drawer Sidebar */
+        .bn-sidebar-overlay {
+            position: fixed; top: 0; left: -300px; width: 270px; height: 100vh;
+            background: #03081c; border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px 20px; z-index: 100; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 15px 0 35px rgba(0,0,0,0.8);
+        }
+        .bn-sidebar-overlay.active { left: 0; }
+
+        .bn-drawer-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .bn-close-btn { cursor: pointer; color: #ffffff; font-weight: bold; font-size: 18px; opacity: 0.8; transition: all 0.2s; }
+        .bn-close-btn:hover { opacity: 1; transform: scale(1.1); }
+
+        .bn-menu-link {
+            display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 10px;
+            color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; transition: all 0.2s ease; margin-bottom: 6px;
+        }
+        .bn-menu-link:hover, .bn-menu-link.active {
+            background: rgba(255, 255, 255, 0.06);
+            border-left: 3px solid #31c7ef;
+        }
+        .bn-menu-icon { font-size: 18px; width: 22px; text-align: center; }
+
+        .bn-logout-link {
+            display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 10px;
+            color: #ef4444; text-decoration: none; font-size: 15px; font-weight: 700; transition: all 0.2s ease;
+        }
+        .bn-logout-link:hover { background: rgba(239, 68, 68, 0.1); }
+
+        .bn-main-content { flex: 1; padding: 32px 36px; max-width: 1560px; margin: 0 auto; width: 100%; }
+
+        .bn-hero-banner {
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #0d1b40 0%, #0c2052 50%, #091330 100%);
+            border: 1px solid rgba(60, 110, 220, 0.25); border-radius: 20px; padding: 32px 40px; margin-bottom: 32px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .bn-hero-tag { font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .bn-hero-title { font-size: 32px; font-weight: 900; margin: 0 0 8px 0; color: #ffffff; }
+
+        .bn-create-btn {
+            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+            border: none; color: #ffffff; padding: 12px 24px; border-radius: 12px;
+            font-size: 14px; font-weight: 800; cursor: pointer; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s;
+        }
+        .bn-create-btn:hover { transform: translateY(-2deg); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.5); }
+
+        .bn-section-card {
+            background: linear-gradient(145deg, #09122b, #050b1a);
+            border: 1.5px solid rgba(255, 255, 255, 0.08); border-radius: 22px; padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+        }
+
+        .bn-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; }
+        .bn-table th { padding: 14px 16px; color: #8292b4; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+        .bn-table td { padding: 16px; background: rgba(255, 255, 255, 0.02); font-size: 14px; color: #e2e8f0; border-top: 1px solid rgba(255, 255, 255, 0.04); border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+        .bn-table tr td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-left: 1px solid rgba(255, 255, 255, 0.04); }
+        .bn-table tr td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; border-right: 1px solid rgba(255, 255, 255, 0.04); }
+
+        .status-paid { color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 12px; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-pending { color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 12px; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        .btn-action { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 700; transition: all 0.2s; border: none; cursor: pointer; }
+        .btn-view { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .btn-pay { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .btn-del { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        /* Modal Popup */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(4, 9, 30, 0.85); backdrop-filter: blur(6px);
+            z-index: 200; display: none; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: #09122b; border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px; padding: 30px; width: 800px; max-width: 95%; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .bn-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .bn-input-label { display: block; font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+
+        .bn-form-input {
+            width: 100%; background: #030714; border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px; padding: 10px 14px; color: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;
+            height: 42px;
+        }
+        select.bn-form-input option { background: #060b1e; color: #ffffff; }
+
+        .bn-btn-submit {
+            width: 100%; height: 46px; border-radius: 10px;
+            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%); border: none;
+            color: #ffffff; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 15px;
+        }
+
+        .bn-alert { padding: 12px 18px; border-radius: 10px; font-size: 14px; font-weight: 700; margin-bottom: 20px; }
+        .bn-alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; }
+        .bn-alert-error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; }
+    </style>
+</head>
+<body class="bn-app">
+
+    <div class="bn-grid-bg"></div>
+
+    <!-- Slide Drawer Sidebar -->
+    <aside class="bn-sidebar-overlay" id="sidebarDrawer">
+        <div>
+            <div class="bn-drawer-header">
+                <a href="{{ url_for('dashboard') }}" class="bn-brand-group">
+                    <div class="bn-logo-box">
+                        <img src="{{ url_for('static', filename='images/billnova_logo.png') }}" alt="Logo" style="max-height:22px;" onerror="this.onerror=null; this.style.display='none'; this.parentNode.innerHTML='📑';">
+                    </div>
+                    <div class="bn-brand-title"><span>Bill</span><span>Nova</span></div>
+                </a>
+                <div onclick="toggleMenu()" class="bn-close-btn">✕</div>
+            </div>
+
+            <nav>
+                <a href="{{ url_for('dashboard') }}" class="bn-menu-link"><span class="bn-menu-icon">🏠</span> Dashboard</a>
+                <a href="{{ url_for('products') }}" class="bn-menu-link"><span class="bn-menu-icon">📦</span> Products</a>
+                <a href="{{ url_for('customers') }}" class="bn-menu-link"><span class="bn-menu-icon">👥</span> Customers</a>
+                <a href="{{ url_for('suppliers') }}" class="bn-menu-link"><span class="bn-menu-icon">🏭</span> Suppliers</a>
+                <a href="{{ url_for('invoices') }}" class="bn-menu-link active"><span class="bn-menu-icon">📑</span> Invoices</a>
+                <a href="{{ url_for('reports') }}" class="bn-menu-link"><span class="bn-menu-icon">📊</span> Reports</a>
+                <a href="{{ url_for('company_settings') }}" class="bn-menu-link"><span class="bn-menu-icon">⚙️</span> Settings</a>
+            </nav>
+        </div>
+
+        <div>
+            <a href="{{ url_for('logout') }}" class="bn-logout-link"><span class="bn-menu-icon">🚪</span> Logout</a>
+        </div>
+    </aside>
+
+    <div class="bn-app-container">
+        
+        <!-- Topbar Header -->
+        <header class="bn-topbar">
+            <div class="bn-topbar-left">
+                <button class="bn-hamburger-btn" onclick="toggleMenu()" title="Toggle Menu">☰</button>
+                <a href="{{ url_for('dashboard') }}" class="bn-brand-group">
+                    <div class="bn-logo-box">
+                        <img src="{{ url_for('static', filename='images/billnova_logo.png') }}" alt="Logo" style="max-height:22px;" onerror="this.onerror=null; this.style.display='none'; this.parentNode.innerHTML='📑';">
+                    </div>
+                    <div class="bn-brand-title"><span>Bill</span><span>Nova</span></div>
+                </a>
+            </div>
+
+            <div class="bn-topbar-right">
+                <div class="bn-system-online">
+                    <span class="bn-online-dot"></span>
+                    <span>System Online</span>
+                </div>
+                <a href="{{ url_for('company_settings') }}" class="bn-settings-btn"><span>⚙</span> Settings</a>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="bn-main-content">
+            
+            <div class="bn-hero-banner">
+                <div>
+                    <div class="bn-hero-tag">TAX INVOICE MANAGEMENT</div>
+                    <h1 class="bn-hero-title">Invoices Directory 📑</h1>
+                    <p style="color:#8292b4; font-size:14px; margin:0;">Create multi-item GST invoices, track payment status, and print A4 bills.</p>
+                </div>
+                <button onclick="toggleCreateModal()" class="bn-create-btn">
+                    <span>➕</span> Create New Invoice
+                </button>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% set last = messages[-1] %}
+                <div class="bn-alert bn-alert-{{ 'error' if last[0] == 'error' else 'success' }}">
+                    {{ last[1] }}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div class="bn-section-card">
+                <h2 style="font-size:18px; font-weight:800; color:#fff; margin:0 0 20px 0;">Generated Tax Invoices</h2>
+                
+                {% if invoices %}
+                <table class="bn-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice No.</th>
+                            <th>Customer Name</th>
+                            <th>Subtotal</th>
+                            <th>CGST / SGST</th>
+                            <th>Grand Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inv in invoices %}
+                        <tr>
+                            <td style="font-weight:800; color:#ffffff;">{{ inv.invoice_number or ('INV-' ~ inv.id) }}</td>
+                            <td style="font-weight:700; color:#38bdf8;">{{ inv.customer_name or 'Client' }}</td>
+                            <td>₹{{ "%.2f"|format((inv.subtotal or 0)|float) }}</td>
+                            <td style="color:#8292b4; font-size:12px;">₹{{ "%.2f"|format(((inv.cgst or 0) + (inv.sgst or 0))|float) }}</td>
+                            <td style="font-weight:900; color:#00ff9d; font-size:15px;">₹{{ "%.2f"|format((inv.grand_total or 0)|float) }}</td>
+                            <td>
+                                {% if inv.payment_status == 'Paid' %}
+                                    <span class="status-paid">Paid</span>
+                                {% else %}
+                                    <span class="status-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td style="display:flex; gap:6px;">
+                                <a href="{{ url_for('view_invoice', id=inv.id) }}" class="btn-action btn-view" title="Print/View PDF">🖨️ Print</a>
+                                
+                                {% if inv.payment_status != 'Paid' %}
+                                <form action="{{ url_for('mark_invoice_paid', invoice_id=inv.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn-action btn-pay">✔ Paid</button>
+                                </form>
+                                {% endif %}
+
+                                <form action="{{ url_for('delete_invoice', id=inv.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this invoice?');">
+                                    <button type="submit" class="btn-action btn-del">🗑️</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div style="text-align:center; padding:50px 0; color:#8292b4; font-size:14px;">
+                    No invoices generated yet. Click <strong>"Create New Invoice"</strong> to generate your first tax bill!
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Invoice Modal Form -->
+    <div class="modal-overlay" id="createInvoiceModal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+                <h3 style="margin:0; font-size:20px; font-weight:800; color:#38bdf8;">🧾 Create Tax Invoice</h3>
+                <span onclick="toggleCreateModal()" style="cursor:pointer; color:#fff; font-size:20px; font-weight:bold; opacity:0.8;">✕</span>
+            </div>
+
+            <form action="{{ url_for('create_invoice') }}" method="POST">
+                
+                <div class="bn-form-row" style="margin-bottom: 16px;">
+                    <div style="grid-column: span 2;">
+                        <label class="bn-input-label">SELECT CUSTOMER *</label>
+                        <select name="customer_id" required class="bn-form-input">
+                            <option value="">-- Choose Customer --</option>
+                            {% if customers %}
+                                {% for cust in customers %}
+                                    <option value="{{ cust.id }}">{{ cust.customer_name }} (GSTIN: {{ cust.gstin or 'N/A' }})</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bn-form-row" style="margin-bottom: 20px;">
+                    <div>
+                        <label class="bn-input-label">INVOICE DATE *</label>
+                        <input type="date" name="invoice_date" required class="bn-form-input" id="invoiceDateInput">
+                    </div>
+                    <div>
+                        <label class="bn-input-label">DUE DATE</label>
+                        <input type="date" name="due_date" class="bn-form-input">
+                    </div>
+                </div>
+
+                <!-- Product Items Section -->
+                <div style="margin-bottom: 20px;">
+                    <label class="bn-input-label" style="margin-bottom: 12px; display: block;">PRODUCT LINE ITEMS *</label>
+                    
+                    <div id="itemsContainer" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div class="item-row-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; position: relative;">
+                            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                                <div>
+                                    <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">PRODUCT</label>
+                                    <select name="product_id[]" required class="bn-form-input item-product" onchange="calculateRow(this)">
+                                        <option value="" data-price="0" data-hsn="">-- Select Product --</option>
+                                        {% if products %}
+                                            {% for prod in products %}
+                                                <option value="{{ prod.id }}" data-price="{{ prod.price or 0 }}" data-hsn="{{ prod.hsn_code or '' }}">
+                                                    {{ prod.product_name }} (Stock: {{ prod.stock or 0 }})
+                                                </option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">HSN CODE</label>
+                                    <input type="text" name="hsn_code[]" class="bn-form-input item-hsn" placeholder="HSN Code" style="text-align: center;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">QUANTITY</label>
+                                    <input type="number" name="quantity[]" value="1" min="1" required class="bn-form-input item-qty" oninput="calculateRow(this)" style="text-align: center;">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1.2fr auto; gap: 12px; align-items: center;">
+                                <div>
+                                    <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">RATE (₹)</label>
+                                    <input type="number" step="0.01" name="price[]" placeholder="0.00" class="bn-form-input item-price" oninput="calculateRow(this)">
+                                </div>
+                                <div>
+                                    <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">GST %</label>
+                                    <input type="number" name="gst_rate[]" value="18" min="0" class="bn-form-input item-gst" oninput="calculateRow(this)" style="text-align: center;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">TOTAL AMOUNT</label>
+                                    <input type="text" class="bn-form-input item-amount" value="₹ 0.00" readonly style="background: rgba(56, 189, 248, 0.08); color: #38bdf8; font-weight: bold; text-align: right;">
+                                </div>
+                                <div style="padding-top: 18px;">
+                                    <button type="button" onclick="removeRow(this)" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Remove Item">✕</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+                        <button type="button" onclick="addItemRow()" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer;">
+                            ➕ Add Another Product
+                        </button>
+                        <div style="font-size: 16px; font-weight: 800; color: #00ff9d;">
+                            Grand Total: <span id="grandTotalDisplay">₹ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bn-form-row" style="margin-bottom: 14px;">
+                    <div>
+                        <label class="bn-input-label">CHALLAN NO.</label>
+                        <input type="text" name="challan_no" placeholder="CH-001" class="bn-form-input">
+                    </div>
+                    <div>
+                        <label class="bn-input-label">P. O. NO. / REF</label>
+                        <input type="text" name="po_no" placeholder="PO-992" class="bn-form-input">
+                    </div>
+                </div>
+
+                <div class="bn-form-row" style="margin-bottom: 14px;">
+                    <div>
+                        <label class="bn-input-label">VEHICLE NO.</label>
+                        <input type="text" name="vehicle_no" placeholder="MH-04-AB-1234" class="bn-form-input">
+                    </div>
+                    <div>
+                        <label class="bn-input-label">STATE CODE</label>
+                        <input type="text" name="state_code" value="27" class="bn-form-input">
+                    </div>
+                </div>
+
+                <div class="bn-form-row" style="margin-bottom: 14px;">
+                    <div>
+                        <label class="bn-input-label">DISPATCH VIA / TRANSPORT</label>
+                        <input type="text" name="transport_mode" placeholder="Road" class="bn-form-input">
+                    </div>
+                    <div>
+                        <label class="bn-input-label">E-WAY BILL NO.</label>
+                        <input type="text" name="eway_bill_no" placeholder="E-way Bill" class="bn-form-input">
+                    </div>
+                </div>
+
+                <div class="bn-form-row" style="margin-bottom: 20px;">
+                    <div>
+                        <label class="bn-input-label">REVERSE CHARGE</label>
+                        <select name="reverse_charge" class="bn-form-input">
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="bn-input-label">DISCOUNT (%)</label>
+                        <input type="number" step="0.01" name="discount_percent" value="0.00" min="0" max="100" class="bn-form-input">
+                    </div>
+                </div>
+
+                <button type="submit" class="bn-btn-submit">
+                    🧾 Generate Verified Tax Invoice
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const dateInput = document.getElementById('invoiceDateInput');
+            if(dateInput) dateInput.valueAsDate = new Date();
+        });
+
+        function toggleMenu() {
+            var drawer = document.getElementById('sidebarDrawer');
+            if (drawer) drawer.classList.toggle('active');
+        }
+
+        function toggleCreateModal() {
+            var modal = document.getElementById('createInvoiceModal');
+            if (modal) modal.classList.toggle('active');
+        }
+
+        function calculateRow(element) {
+            const card = element.closest('.item-row-card');
+            if (!card) return;
+            
+            const select = card.querySelector('.item-product');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            const hsnInput = card.querySelector('.item-hsn');
+            const priceInput = card.querySelector('.item-price');
+            const qtyInput = card.querySelector('.item-qty');
+            const gstInput = card.querySelector('.item-gst');
+            const amountInput = card.querySelector('.item-amount');
+
+            if (element.classList.contains('item-product')) {
+                const defaultPrice = selectedOption.getAttribute('data-price');
+                const defaultHsn = selectedOption.getAttribute('data-hsn');
+                if (defaultPrice) priceInput.value = parseFloat(defaultPrice).toFixed(2);
+                if (defaultHsn) hsnInput.value = defaultHsn;
+            }
+
+            const qty = parseFloat(qtyInput.value) || 0;
+            const price = parseFloat(priceInput.value) || 0;
+            const gstPercent = parseFloat(gstInput.value) || 0;
+
+            const subtotal = qty * price;
+            const taxAmount = (subtotal * gstPercent) / 100;
+            const totalRowAmount = subtotal + taxAmount;
+
+            amountInput.value = '₹ ' + totalRowAmount.toFixed(2);
+            calculateGrandTotal();
+        }
+
+        function calculateGrandTotal() {
+            let grandTotal = 0;
+            document.querySelectorAll('#itemsContainer .item-row-card').forEach(card => {
+                const qty = parseFloat(card.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(card.querySelector('.item-price').value) || 0;
+                const gstPercent = parseFloat(card.querySelector('.item-gst').value) || 0;
+                const subtotal = qty * price;
+                grandTotal += subtotal + ((subtotal * gstPercent) / 100);
+            });
+            const totalDisplay = document.getElementById('grandTotalDisplay');
+            if(totalDisplay) totalDisplay.innerText = '₹ ' + grandTotal.toFixed(2);
+        }
+
+        function addItemRow() {
+            const container = document.getElementById('itemsContainer');
+            if (!container) return;
+
+            const firstSelect = container.querySelector('.item-product');
+            const optionsHtml = firstSelect ? firstSelect.innerHTML : '<option value="">-- Select Product --</option>';
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'item-row-card';
+            cardDiv.style.cssText = 'background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; position: relative;';
+            
+            cardDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">PRODUCT</label>
+                        <select name="product_id[]" required class="bn-form-input item-product" onchange="calculateRow(this)">
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">HSN CODE</label>
+                        <input type="text" name="hsn_code[]" class="bn-form-input item-hsn" placeholder="HSN Code" style="text-align: center;">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">QUANTITY</label>
+                        <input type="number" name="quantity[]" value="1" min="1" required class="bn-form-input item-qty" oninput="calculateRow(this)" style="text-align: center;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1.2fr auto; gap: 12px; align-items: center;">
+                    <div>
+                        <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">RATE (₹)</label>
+                        <input type="number" step="0.01" name="price[]" placeholder="0.00" class="bn-form-input item-price" oninput="calculateRow(this)">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">GST %</label>
+                        <input type="number" name="gst_rate[]" value="18" min="0" class="bn-form-input item-gst" oninput="calculateRow(this)" style="text-align: center;">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; color: #8292b4; font-weight: 700; display: block; margin-bottom: 4px;">TOTAL AMOUNT</label>
+                        <input type="text" class="bn-form-input item-amount" value="₹ 0.00" readonly style="background: rgba(56, 189, 248, 0.08); color: #38bdf8; font-weight: bold; text-align: right;">
+                    </div>
+                    <div style="padding-top: 18px;">
+                        <button type="button" onclick="removeRow(this)" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Remove Item">✕</button>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(cardDiv);
+        }
+
+        function removeRow(btn) {
+            const container = document.getElementById('itemsContainer');
+            if (container.querySelectorAll('.item-row-card').length > 1) {
+                btn.closest('.item-row-card').remove();
+                calculateGrandTotal();
+            } else {
+                alert('At least one product item is required!');
+            }
+        }
+    </script>
+</body>
+</html>

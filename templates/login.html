@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BillNova Smart Billing Management</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #020716;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Glowing Planets */
+        .bn-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, rgba(20, 80, 190, 0.5), rgba(3, 10, 30, 0.2));
+            box-shadow: 0 0 60px rgba(18, 70, 180, 0.4), inset -10px -10px 25px rgba(0, 0, 0, 0.8), inset 10px 10px 22px rgba(49, 199, 239, 0.4);
+            z-index: 1;
+            animation: orbFloat 8s ease-in-out infinite alternate;
+        }
+        .orb-1 { width: 145px; height: 145px; top: 16%; left: 10%; animation-delay: 0s; }
+        .orb-2 { width: 115px; height: 115px; top: 30%; right: 12%; animation-delay: 2.5s; }
+        .orb-3 { width: 85px; height: 85px; bottom: 12%; left: 16%; animation-delay: 4.5s; }
+
+        @keyframes orbFloat {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-22px) rotate(12deg); }
+        }
+
+        /* Extra Floating Glowing Stars */
+        .star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #31c7ef, 0 0 14px #ffffff;
+            z-index: 1;
+            animation: starGlow 3s ease-in-out infinite alternate;
+        }
+        @keyframes starGlow {
+            0% { opacity: 0.15; transform: scale(0.7); }
+            100% { opacity: 1; transform: scale(1.4); }
+        }
+
+        .bn-space-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Header Logo Section */
+        .bn-brand-header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+        .bn-logo-box {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 10px auto;
+            background: linear-gradient(135deg, #0a2d80, #041238);
+            border: 2px solid #31c7ef;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 28px rgba(49, 199, 239, 0.65);
+        }
+        .bn-brand-title {
+            font-size: 30px;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        .bn-brand-title span:first-child { color: #ffffff; }
+        .bn-brand-title span:last-child { color: #31c7ef; }
+        .bn-brand-sub {
+            font-size: 11px;
+            font-weight: 700;
+            color: #7292c7;
+            letter-spacing: 2px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Glassmorphic Card */
+        .bn-login-card {
+            width: 100%;
+            background: linear-gradient(165deg, rgba(10, 26, 64, 0.8), rgba(3, 10, 30, 0.92));
+            border: 1px solid rgba(70, 150, 230, 0.28);
+            border-radius: 22px;
+            padding: 34px 28px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(20, 70, 180, 0.18);
+        }
+
+        .bn-card-title {
+            font-size: 26px;
+            font-weight: 800;
+            text-align: center;
+            margin: 0 0 6px 0;
+            color: #ffffff;
+        }
+        .bn-card-desc {
+            font-size: 13px;
+            color: #8aa3d4;
+            text-align: center;
+            margin: 0 0 22px 0;
+            line-height: 1.4;
+        }
+
+        .bn-field-group { margin-bottom: 16px; }
+        .bn-field-label { display: block; font-size: 12px; font-weight: 700; color: #8aa3d4; margin-bottom: 8px; }
+        
+        .bn-input-wrap { position: relative; display: flex; align-items: center; }
+        .bn-input-icon { position: absolute; left: 14px; color: #5272a3; font-size: 14px; }
+        
+        .bn-input-field {
+            width: 100%;
+            background: rgba(3, 12, 35, 0.95);
+            border: 1px solid rgba(60, 120, 200, 0.32);
+            border-radius: 12px;
+            padding: 13px 14px 13px 42px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+        .bn-input-field:focus {
+            border-color: #31c7ef;
+            box-shadow: 0 0 16px rgba(49, 199, 239, 0.4);
+        }
+
+        .bn-utility-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            margin-bottom: 22px;
+        }
+        .bn-remember-wrap { display: flex; align-items: center; gap: 6px; color: #8aa3d4; cursor: pointer; }
+        .bn-remember-wrap input { accent-color: #31c7ef; cursor: pointer; }
+        .bn-forgot-link { color: #31c7ef; text-decoration: none; font-weight: 600; }
+
+        .bn-btn-submit {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1d5ce5, #31c7ef);
+            border: none;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 28px rgba(45, 160, 255, 0.5);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .bn-btn-submit:hover {
+            box-shadow: 0 0 38px rgba(49, 199, 239, 0.75);
+        }
+
+        .bn-footer-text { text-align: center; font-size: 13px; color: #8aa3d4; margin-top: 20px; margin-bottom: 0; }
+        .bn-footer-text a { color: #31c7ef; text-decoration: none; font-weight: 700; }
+        .bn-back-welcome { margin-top: 18px; color: #6e8cc2; text-decoration: none; font-size: 13px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Planets -->
+    <div class="bn-orb orb-1"></div>
+    <div class="bn-orb orb-2"></div>
+    <div class="bn-orb orb-3"></div>
+
+    <!-- Star Particles -->
+    <div class="star" style="width:3px; height:3px; top:8%; left:15%; animation-delay:0s;"></div>
+    <div class="star" style="width:4px; height:4px; top:18%; left:35%; animation-delay:1.2s;"></div>
+    <div class="star" style="width:2px; height:2px; top:28%; right:22%; animation-delay:0.7s;"></div>
+    <div class="star" style="width:5px; height:5px; top:12%; right:8%; animation-delay:2.1s;"></div>
+    <div class="star" style="width:3px; height:3px; top:55%; left:8%; animation-delay:1.5s;"></div>
+    <div class="star" style="width:4px; height:4px; top:75%; left:28%; animation-delay:2.8s;"></div>
+    <div class="star" style="width:2px; height:2px; top:68%; right:14%; animation-delay:0.3s;"></div>
+    <div class="star" style="width:3px; height:3px; bottom:12%; right:30%; animation-delay:1.8s;"></div>
+
+    <div class="bn-space-wrapper">
+        <div class="bn-brand-header">
+            <div class="bn-logo-box">
+                <img src="{{ url_for('static', filename='images/billnova_logo.png') }}" alt="BillNova" style="max-height:36px;" onerror="this.onerror=null; this.src=''; this.innerHTML='📑';">
+            </div>
+            <h1 class="bn-brand-title"><span>Bill</span><span>Nova</span></h1>
+            <div class="bn-brand-sub">Smart Billing Management</div>
+        </div>
+
+        <div class="bn-login-card">
+            <h2 class="bn-card-title">Welcome Back!</h2>
+            <p class="bn-card-desc">Login to manage your business and billing efficiently.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div style="padding: 10px 14px; margin-bottom: 18px; border-radius: 10px; font-weight: 600; font-size: 13px; {{ 'background: rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4);' if category == 'error' else 'background: rgba(34,197,94,0.2); color:#4ade80; border:1px solid rgba(34,197,94,0.4);' }}">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('login') }}" method="POST">
+               <!-- Register / Login Email Field -->
+<div class="bn-field-group">
+    <label class="bn-field-label">Email Address</label>
+    <div class="bn-input-wrap">
+        <span class="bn-input-icon">✉</span>
+        <input 
+            type="email" 
+            name="email" 
+            placeholder="Enter your email (e.g. name@domain.com)" 
+            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            title="Please enter a valid email address"
+            required 
+            class="bn-input-field"
+        >
+    </div>
+</div>
+                <div class="bn-field-group">
+                    <label class="bn-field-label">Password</label>
+                    <div class="bn-input-wrap">
+                        <span class="bn-input-icon">🔒</span>
+                        <input type="password" name="password" placeholder="Enter your password" required class="bn-input-field">
+                    </div>
+                </div>
+
+                <div class="bn-utility-row">
+                    <label class="bn-remember-wrap">
+                        <input type="checkbox" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="bn-forgot-link">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="bn-btn-submit">
+                    Login to BillNova <span>→</span>
+                </button>
+            </form>
+
+            <p class="bn-footer-text">
+                Don't have an account? <a href="{{ url_for('register') }}">Create Account</a>
+            </p>
+        </div>
+
+        <a href="{{ url_for('home') }}" class="bn-back-welcome">← Back to Welcome</a>
+    </div>
+
+</body>
+</html>

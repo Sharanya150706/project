@@ -1,0 +1,46 @@
+
+<aside class="bn-sidebar-overlay" id="sidebarDrawer">
+    <div>
+        <div class="bn-drawer-header">
+            <div class="bn-brand-group">
+                <div class="bn-logo-box">
+                    <img src="{{ url_for('static', filename='images/billnova_logo.png') }}" alt="Logo" style="max-height:22px;" onerror="this.onerror=null; this.src=''; this.innerHTML='📑';">
+                </div>
+                <div class="bn-brand-title"><span>Bill</span><span>Nova</span></div>
+            </div>
+            <div onclick="toggleMenu()" class="bn-close-btn">✕</div>
+        </div>
+
+        <nav>
+            <a href="{{ url_for('dashboard') }}" class="bn-menu-link">
+                <span class="bn-menu-icon">🏠</span> Dashboard
+            </a>
+            <a href="{{ url_for('products') }}" class="bn-menu-link">
+                <span class="bn-menu-icon">📦</span> Products
+            </a>
+            <a href="{{ url_for('customers') }}" class="bn-menu-link">
+                <span class="bn-menu-icon">👥</span> Customers
+            </a>
+            <a href="{{ url_for('suppliers') }}" class="bn-menu-link">
+                <span class="bn-menu-icon">🏭</span> Suppliers
+            </a>
+            <a href="{{ url_for('invoices') }}" class="bn-menu-link">
+                <span class="bn-menu-icon">📑</span> Invoices
+            </a>
+            <a href="{{ url_for('reports') }}" class="bn-menu-link">
+                <span class="bn-menu-icon">📊</span> Reports
+            </a>
+            <a href="{{ url_for('company_settings') }}" class="bn-menu-link">
+                <span class="bn-menu-icon">⚙️</span> Settings
+            </a>
+        </nav>
+    </div>
+
+    <div>
+        <a href="{{ url_for('logout') }}" class="bn-logout-link">
+            <span class="bn-menu-icon">🚪</span> Logout
+        </a>
+    </div>
+</aside>
+
+<div class="bn-sidebar-overlay" id="sidebarOverlay"></div>

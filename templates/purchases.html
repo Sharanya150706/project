@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase & Stock Entry | BillNova</title>
+    <style>
+        * { box-sizing: border-box; }
+        body.bn-app {
+            background: #04091e;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            overflow-x: hidden; position: relative;
+        }
+
+        .bn-grid-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(49, 199, 239, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(49, 199, 239, 0.04) 1px, transparent 1px);
+            background-size: 38px 38px; z-index: 0; pointer-events: none;
+        }
+
+        .bn-app-container { position: relative; z-index: 2; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* Topbar Header */
+        .bn-topbar {
+            height: 68px; padding: 0 28px; display: flex; align-items: center; justify-content: space-between;
+            background: #060b1e; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .bn-topbar-left { display: flex; align-items: center; gap: 18px; }
+
+        .bn-hamburger-btn {
+            width: 38px; height: 38px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px;
+            color: #ffffff; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 18px; transition: all 0.2s ease;
+        }
+        .bn-hamburger-btn:hover { background: rgba(255, 255, 255, 0.12); }
+
+        .bn-brand-group { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .bn-logo-box {
+            width: 36px; height: 36px; background: #0c1838;
+            border: 1px solid rgba(49, 199, 239, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center;
+        }
+        .bn-brand-title { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+        .bn-brand-title span:first-child { color: #ffffff; }
+        .bn-brand-title span:last-child { color: #31c7ef; }
+
+        .bn-topbar-right { display: flex; align-items: center; gap: 20px; }
+        .bn-system-online { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #8292b4; }
+        .bn-online-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
+
+        .bn-settings-btn {
+            display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px;
+            color: #ffffff; font-size: 13px; font-weight: 700; text-decoration: none; transition: all 0.2s ease;
+        }
+
+        /* Slide Drawer */
+        .bn-sidebar-overlay {
+            position: fixed; top: 0; left: -300px; width: 260px; height: 100vh;
+            background: #060b1e; border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px 18px; z-index: 100; transition: all 0.3s ease;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .bn-sidebar-overlay.active { left: 0; }
+
+        .bn-menu-link {
+            display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px;
+            color: #8292b4; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.2s ease; margin-bottom: 6px;
+        }
+        .bn-menu-link:hover, .bn-menu-link.active {
+            background: linear-gradient(135deg, #1b3572, #142856);
+            color: #ffffff; border: 1px solid rgba(70, 130, 240, 0.3);
+        }
+
+        .bn-main-content { flex: 1; padding: 32px 36px; max-width: 1440px; margin: 0 auto; width: 100%; }
+
+        .bn-hero-banner {
+            background: linear-gradient(135deg, #0d1b40 0%, #0c2052 50%, #091330 100%);
+            border: 1px solid rgba(60, 110, 220, 0.25); border-radius: 20px; padding: 32px 40px; margin-bottom: 32px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        .bn-hero-tag { font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .bn-hero-title { font-size: 32px; font-weight: 900; margin: 0 0 8px 0; color: #ffffff; }
+
+        .bn-workspace-grid { display: grid; grid-template-columns: 1fr 420px; gap: 24px; }
+
+        .bn-section-card {
+            background: linear-gradient(145deg, #0d1733, #091024);
+            border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 18px; padding: 26px;
+        }
+
+        .bn-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .bn-table th { padding: 12px 14px; color: #8292b4; font-size: 11px; text-transform: uppercase; font-weight: 700; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+        .bn-table td { padding: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 13px; color: #e2e8f0; }
+
+        .bn-form-group { margin-bottom: 14px; }
+        .bn-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .bn-input-label { display: block; font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 6px; }
+
+        .bn-form-input, .bn-form-select {
+            width: 100%; background: #060a19; border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px; padding: 10px 12px; color: #ffffff; font-size: 13px; outline: none; transition: all 0.2s;
+        }
+        .bn-form-input:focus, .bn-form-select:focus { border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+
+        .bn-btn-submit {
+            width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px;
+            background: linear-gradient(135deg, #10b981, #059669); border: none;
+            color: #ffffff; font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+        }
+        .bn-btn-submit:hover { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.5); transform: translateY(-2deg); }
+    </style>
+</head>
+<body class="bn-app">
+
+    <div class="bn-grid-bg"></div>
+
+    <aside class="bn-sidebar-overlay" id="sidebarDrawer">
+        <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px;">
+                <div class="bn-brand-group">
+                    <div class="bn-logo-box">
+                        <img src="{{ url_for('static', filename='images/billnova_logo.png') }}" alt="Logo" style="max-height:22px;" onerror="this.onerror=null; this.src=''; this.innerHTML='📑';">
+                    </div>
+                    <div class="bn-brand-title"><span>Bill</span><span>Nova</span></div>
+                </div>
+                <div onclick="toggleMenu()" style="cursor:pointer; color:#38bdf8; font-weight:bold; font-size:18px;">✕</div>
+            </div>
+
+            <nav>
+                <a href="{{ url_for('dashboard') }}" class="bn-menu-link">⌂ Dashboard</a>
+                <a href="{{ url_for('invoices') }}" class="bn-menu-link">📑 Invoices</a>
+                <a href="{{ url_for('purchases') }}" class="bn-menu-link active">🛒 Purchases</a>
+                <a href="{{ url_for('products') }}" class="bn-menu-link">📦 Products</a>
+                <a href="{{ url_for('customers') }}" class="bn-menu-link">👥 Customers</a>
+                <a href="{{ url_for('reports') }}" class="bn-menu-link">📊 Reports</a>
+            </nav>
+        </div>
+
+        <div>
+            <a href="{{ url_for('logout') }}" class="bn-menu-link" style="color:#f87171;">↪ Logout</a>
+        </div>
+    </aside>
+
+    <div class="bn-app-container">
+        
+        <header class="bn-topbar">
+            <div class="bn-topbar-left">
+                <button class="bn-hamburger-btn" onclick="toggleMenu()" title="Toggle Menu">☰</button>
+                <a href="{{ url_for('dashboard') }}" class="bn-brand-group">
+                    <div class="bn-logo-box">
+                        <img src="{{ url_for('static', filename='images/billnova_logo.png') }}" alt="Logo" style="max-height:22px;" onerror="this.onerror=null; this.src=''; this.innerHTML='📑';">
+                    </div>
+                    <div class="bn-brand-title"><span>Bill</span><span>Nova</span></div>
+                </a>
+            </div>
+
+            <div class="bn-topbar-right">
+                <div class="bn-system-online">
+                    <span class="bn-online-dot"></span>
+                    <span>System Online</span>
+                </div>
+                <a href="{{ url_for('company_settings') }}" class="bn-settings-btn"><span>⚙</span> Settings</a>
+            </div>
+        </header>
+
+        <main class="bn-main-content">
+            <div class="bn-hero-banner">
+                <div class="bn-hero-tag">INVENTORY INWARD DESK</div>
+                <h1 class="bn-hero-title">Purchase Entries & Inward Stock 🛒</h1>
+                <p style="color:#8292b4; font-size:14px; margin:0;">Record vendor purchases to automatically update live product inventory stock.</p>
+            </div>
+
+            <div class="bn-workspace-grid">
+                
+                <div class="bn-section-card">
+                    <h2 style="font-size:16px; font-weight:700; color:#fff; margin:0 0 18px 0;">Purchase History Logs</h2>
+                    {% if purchases %}
+                    <table class="bn-table">
+                        <thead>
+                            <tr>
+                                <th>Supplier</th>
+                                <th>Invoice #</th>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Total Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pur in purchases %}
+                            <tr>
+                                <td style="font-weight:700; color:#ffffff;">{{ pur.supplier_name }}</td>
+                                <td>{{ pur.purchase_invoice_no or 'N/A' }}</td>
+                                <td style="color:#38bdf8; font-weight:700;">{{ pur.product_name }}</td>
+                                <td><span style="color:#10b981; font-weight:800;">+{{ pur.quantity }}</span></td>
+                                <td style="font-weight:800; color:#ffffff;">₹{{ "%.2f"|format(pur.total_amount|float) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div style="text-align:center; padding:50px 0; color:#8292b4;">No purchase records logged yet.</div>
+                    {% endif %}
+                </div>
+
+                <div class="bn-section-card">
+                    <h2 style="font-size:16px; font-weight:700; color:#fff; margin:0 0 16px 0;">Record New Purchase</h2>
+
+                    <form action="{{ url_for('purchases') }}" method="POST">
+                        <div class="bn-form-group">
+                            <label class="bn-input-label">SUPPLIER / VENDOR NAME *</label>
+                            <input type="text" name="supplier_name" placeholder="e.g. Apex Traders" required class="bn-form-input">
+                        </div>
+
+                        <div class="bn-form-group">
+                            <label class="bn-input-label">PURCHASE INVOICE NO.</label>
+                            <input type="text" name="purchase_invoice_no" placeholder="e.g. SUP-9981" class="bn-form-input">
+                        </div>
+
+                        <div class="bn-form-group">
+                            <label class="bn-input-label">SELECT ITEM TO ADD TO STOCK *</label>
+                            <select name="product_id" class="bn-form-select" required>
+                                <option value="">-- Choose Item --</option>
+                                {% for prod in products %}
+                                <option value="{{ prod.id }}">{{ prod.product_name }} (Current: {{ prod.stock or 0 }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="bn-form-group bn-form-row">
+                            <div>
+                                <label class="bn-input-label">PURCHASED QTY *</label>
+                                <input type="number" name="quantity" value="10" min="1" required class="bn-form-input">
+                            </div>
+                            <div>
+                                <label class="bn-input-label">COST PER ITEM (₹) *</label>
+                                <input type="number" step="0.01" name="purchase_price" placeholder="0.00" required class="bn-form-input">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="bn-btn-submit">➕ Save Entry & Add to Stock</button>
+                    </form>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebarDrawer').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

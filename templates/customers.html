@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers & Client Dues | BillNova</title>
+    <style>
+        * { box-sizing: border-box; }
+        body.bn-app {
+            background: #04091e;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            overflow-x: hidden; position: relative;
+        }
+
+        .bn-grid-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(49, 199, 239, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(49, 199, 239, 0.04) 1px, transparent 1px);
+            background-size: 38px 38px; z-index: 0; pointer-events: none;
+        }
+
+        .bn-app-container { position: relative; z-index: 2; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* Topbar Header */
+        .bn-topbar {
+            height: 68px; padding: 0 28px; display: flex; align-items: center; justify-content: space-between;
+            background: #060b1e; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .bn-topbar-left { display: flex; align-items: center; gap: 18px; }
+
+        .bn-hamburger-btn {
+            width: 38px; height: 38px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px;
+            color: #ffffff; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 18px; transition: all 0.2s ease;
+        }
+        .bn-hamburger-btn:hover { background: rgba(255, 255, 255, 0.12); }
+
+        .bn-brand-group { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .bn-logo-box {
+            width: 36px; height: 36px; background: #0c1838;
+            border: 1px solid rgba(49, 199, 239, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 15px rgba(49, 199, 239, 0.5);
+        }
+        .bn-brand-title { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+        .bn-brand-title span:first-child { color: #ffffff; }
+        .bn-brand-title span:last-child { color: #31c7ef; text-shadow: 0 0 12px rgba(49, 199, 239, 0.6); }
+
+        .bn-topbar-right { display: flex; align-items: center; gap: 20px; }
+        .bn-system-online { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #8292b4; }
+        .bn-online-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
+
+        .bn-settings-btn {
+            display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px;
+            color: #ffffff; font-size: 13px; font-weight: 700; text-decoration: none;
+        }
+
+        /* Slide Drawer Sidebar */
+        .bn-sidebar-overlay {
+            position: fixed; top: 0; left: -300px; width: 270px; height: 100vh;
+            background: #03081c; border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px 20px; z-index: 100; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 15px 0 35px rgba(0,0,0,0.8);
+        }
+        .bn-sidebar-overlay.active { left: 0; }
+
+        .bn-drawer-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .bn-close-btn { cursor: pointer; color: #ffffff; font-weight: bold; font-size: 18px; opacity: 0.8; transition: all 0.2s; }
+        .bn-close-btn:hover { opacity: 1; transform: scale(1.1); }
+
+        .bn-menu-link {
+            display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 10px;
+            color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; transition: all 0.2s ease; margin-bottom: 6px;
+        }
+        .bn-menu-link:hover, .bn-menu-link.active {
+            background: rgba(255, 255, 255, 0.06);
+            border-left: 3px solid #31c7ef;
+        }
+        .bn-menu-icon { font-size: 18px; width: 22px; text-align: center; }
+
+        .bn-logout-link {
+            display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 10px;
+            color: #ef4444; text-decoration: none; font-size: 15px; font-weight: 700; transition: all 0.2s ease;
+        }
+        .bn-logout-link:hover { background: rgba(239, 68, 68, 0.1); }
+
+        .bn-main-content { flex: 1; padding: 32px 36px; max-width: 1560px; margin: 0 auto; width: 100%; }
+
+        /* Floating Icon Animation */
+        .bn-animated-icon {
+            display: inline-block;
+            animation: iconFloat 3s ease-in-out infinite alternate;
+        }
+        @keyframes iconFloat {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-7px) rotate(6deg); }
+        }
+
+        .bn-hero-banner {
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #0d1b40 0%, #0c2052 50%, #091330 100%);
+            border: 1px solid rgba(60, 110, 220, 0.25); border-radius: 20px; padding: 32px 40px; margin-bottom: 32px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        .bn-hero-tag { font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .bn-hero-title { font-size: 32px; font-weight: 900; margin: 0 0 8px 0; color: #ffffff; }
+
+        .bn-workspace-grid { display: grid; grid-template-columns: 1fr 440px; gap: 28px; }
+
+        .bn-section-card {
+            background: linear-gradient(145deg, #09122b, #050b1a);
+            border: 1.5px solid rgba(255, 255, 255, 0.08); border-radius: 22px; padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+        }
+
+        .bn-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; }
+        .bn-table th { padding: 14px 16px; color: #8292b4; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+        .bn-table td { padding: 16px; background: rgba(255, 255, 255, 0.02); font-size: 14px; color: #e2e8f0; border-top: 1px solid rgba(255, 255, 255, 0.04); border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+        .bn-table tr td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-left: 1px solid rgba(255, 255, 255, 0.04); }
+        .bn-table tr td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; border-right: 1px solid rgba(255, 255, 255, 0.04); }
+
+        .bn-form-group { margin-bottom: 20px; position: relative; }
+        .bn-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .bn-input-label { display: block; font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+
+        .bn-form-input {
+            width: 100%; background: #030714; border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px; padding: 12px 16px; color: #ffffff; font-size: 14px; outline: none; transition: all 0.2s;
+            height: 46px;
+        }
+        .bn-form-input:focus { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.35); background: #050c21; }
+        
+        .bn-form-input.val-error { border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.08) !important; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4) !important; }
+        .val-text-err { color: #f87171; font-size: 11px; font-weight: 700; margin-top: 5px; display: none; }
+
+        .bn-flash-alert-error { padding: 14px 20px; border-radius: 12px; margin-bottom: 24px; font-size: 13px; font-weight: 800; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; }
+        .bn-flash-alert-success { padding: 14px 20px; border-radius: 12px; margin-bottom: 24px; font-size: 13px; font-weight: 800; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; }
+
+        .bn-btn-submit {
+            width: 100%; height: 50px; border-radius: 12px;
+            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%); border: none;
+            color: #ffffff; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .bn-btn-submit:hover { transform: translateY(-2deg); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.5); }
+
+        .bn-due-badge { font-weight: 800; color: #f87171; background: rgba(239, 68, 68, 0.15); padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 12px; display: inline-block; }
+        .bn-clear-badge { font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.15); padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 12px; display: inline-block; }
+    </style>
+</head>
+<body class="bn-app">
+
+    <div class="bn-grid-bg"></div>
+
+    <aside class="bn-sidebar-overlay" id="sidebarDrawer">
+        <div>
+            <div class="bn-drawer-header">
+                <div class="bn-brand-group">
+                    <div class="bn-logo-box">
+                        <img src="{{ url_for('static', filename='images/billnova_logo.png') }}" alt="Logo" style="max-height:22px;" onerror="this.onerror=null; this.src=''; this.innerHTML='📑';">
+                    </div>
+                    <div class="bn-brand-title"><span>Bill</span><span>Nova</span></div>
+                </div>
+                <div onclick="toggleMenu()" class="bn-close-btn">✕</div>
+            </div>
+
+            <nav>
+                <a href="{{ url_for('dashboard') }}" class="bn-menu-link">
+                    <span class="bn-menu-icon">🏠</span> Dashboard
+                </a>
+                <a href="{{ url_for('products') }}" class="bn-menu-link">
+                    <span class="bn-menu-icon">📦</span> Products
+                </a>
+                <a href="{{ url_for('customers') }}" class="bn-menu-link active">
+                    <span class="bn-menu-icon">👥</span> Customers
+                </a>
+                <a href="{{ url_for('suppliers') }}" class="bn-menu-link">
+                    <span class="bn-menu-icon">🏭</span> Suppliers
+                </a>
+                <a href="{{ url_for('invoices') }}" class="bn-menu-link">
+                    <span class="bn-menu-icon">📑</span> Invoices
+                </a>
+                <a href="{{ url_for('reports') }}" class="bn-menu-link">
+                    <span class="bn-menu-icon">📊</span> Reports
+                </a>
+                <a href="{{ url_for('company_settings') }}" class="bn-menu-link">
+                    <span class="bn-menu-icon">⚙️</span> Settings
+                </a>
+            </nav>
+        </div>
+
+        <div>
+            <a href="{{ url_for('logout') }}" class="bn-logout-link">
+                <span class="bn-menu-icon">🚪</span> Logout
+            </a>
+        </div>
+    </aside>
+
+    <div class="bn-app-container">
+        
+        <header class="bn-topbar">
+            <div class="bn-topbar-left">
+                <button class="bn-hamburger-btn" onclick="toggleMenu()" title="Toggle Menu">☰</button>
+                <a href="{{ url_for('dashboard') }}" class="bn-brand-group">
+                    <div class="bn-logo-box">
+                        <img src="{{ url_for('static', filename='images/billnova_logo.png') }}" alt="Logo" style="max-height:22px;" onerror="this.onerror=null; this.src=''; this.innerHTML='📑';">
+                    </div>
+                    <div class="bn-brand-title"><span>Bill</span><span>Nova</span></div>
+                </a>
+            </div>
+
+            <div class="bn-topbar-right">
+                <div class="bn-system-online">
+                    <span class="bn-online-dot"></span>
+                    <span>System Online</span>
+                </div>
+                <a href="{{ url_for('company_settings') }}" class="bn-settings-btn"><span>⚙</span> Settings</a>
+            </div>
+        </header>
+
+        <main class="bn-main-content">
+            
+            <!-- Restored Hero Banner -->
+            <div class="bn-hero-banner">
+                <div class="bn-hero-tag">CLIENT DIRECTORY & COLLECTION TRACKER</div>
+                <h1 class="bn-hero-title">Customers Management <span class="bn-animated-icon">👥</span></h1>
+                <p style="color:#8292b4; font-size:14px; margin:0;">Register client accounts, track GSTIN info, and monitor uncollected pending bill dues.</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="{{ 'bn-flash-alert-error' if category == 'error' else 'bn-flash-alert-success' }}">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <div class="bn-workspace-grid">
+                
+                <div class="bn-section-card">
+                    <h2 style="font-size:18px; font-weight:800; color:#fff; margin:0 0 20px 0; display:flex; align-items:center; gap:8px;">
+                        <span>👥</span> Client Directory & Unpaid Dues
+                    </h2>
+                    {% if customers %}
+                    <table class="bn-table">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Phone</th>
+                                <th>Total Revenue</th>
+                                <th>Pending Due Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cust in customers %}
+                            <tr>
+                                <td style="font-weight:800; color:#ffffff; font-size:15px;">{{ cust.customer_name }}</td>
+                                <td style="color:#38bdf8; font-weight:600;">{{ cust.phone or 'N/A' }}</td>
+                                <td style="font-weight:900; color:#00ff9d; font-size:15px;">₹{{ "%.2f"|format((cust.total_business or 0)|float) }}</td>
+                                <td>
+                                    {% if (cust.pending_due or 0) > 0 %}
+                                        <span class="bn-due-badge">⚠️ ₹{{ "%.2f"|format((cust.pending_due or 0)|float) }} Pending</span>
+                                    {% else %}
+                                        <span class="bn-clear-badge">✅ All Clear</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div style="text-align:center; padding:60px 0; color:#8292b4; font-size:14px;">No customers registered yet.</div>
+                    {% endif %}
+                </div>
+
+                <div class="bn-section-card">
+                    <h2 style="font-size:18px; font-weight:800; color:#fff; margin:0 0 20px 0; display:flex; align-items:center; gap:8px;">
+                        <span>➕</span> Register New Customer
+                    </h2>
+                    <form id="customerForm" action="{{ url_for('customers') }}" method="POST" novalidate>
+                        <div class="bn-form-group">
+                            <label class="bn-input-label">CUSTOMER NAME *</label>
+                            <input type="text" id="custName" name="customer_name" placeholder="e.g. Ramesh Kumar" class="bn-form-input">
+                            <div class="val-text-err" id="errCustName">⚠️ Customer name must be at least 2 letters.</div>
+                        </div>
+
+                        <div class="bn-form-group bn-form-row">
+                            <div>
+                                <label class="bn-input-label">PHONE NUMBER (10 DIGITS)</label>
+                                <input type="text" id="custPhone" name="phone" placeholder="9876543210" maxlength="10" class="bn-form-input">
+                                <div class="val-text-err" id="errCustPhone">⚠️ Must be 10 digits (e.g. 9876543210).</div>
+                            </div>
+                            <div>
+                                <label class="bn-input-label">EMAIL ADDRESS</label>
+                                <input type="email" id="custEmail" name="email" placeholder="client@domain.com" class="bn-form-input">
+                                <div class="val-text-err" id="errCustEmail">⚠️ Invalid Email format (e.g. abc@domain.com).</div>
+                            </div>
+                        </div>
+
+                        <div class="bn-form-group">
+                            <label class="bn-input-label">GSTIN / TAX ID (15 CHARS)</label>
+                            <input type="text" id="custGstin" name="gstin" placeholder="27ABCDE1234F1Z5" maxlength="15" style="text-transform: uppercase;" class="bn-form-input">
+                            <div class="val-text-err" id="errCustGstin">⚠️ Invalid GSTIN format (e.g. 27ABCDE1234F1Z5).</div>
+                        </div>
+
+                        <div class="bn-form-group">
+                            <label class="bn-input-label">BILLING ADDRESS</label>
+                            <input type="text" name="address" placeholder="Mumbai, Maharashtra" class="bn-form-input">
+                        </div>
+
+                        <button type="submit" class="bn-btn-submit">
+                            <span>👥</span> Save Customer Account
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            var drawer = document.getElementById('sidebarDrawer');
+            if (drawer) { drawer.classList.toggle('active'); }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('customerForm');
+            if (!form) return;
+
+            form.addEventListener('submit', function(e) {
+                var isFormValid = true;
+
+                var nameField = document.getElementById('custName');
+                var phoneField = document.getElementById('custPhone');
+                var emailField = document.getElementById('custEmail');
+                var gstinField = document.getElementById('custGstin');
+
+                var errName = document.getElementById('errCustName');
+                var errPhone = document.getElementById('errCustPhone');
+                var errEmail = document.getElementById('errCustEmail');
+                var errGstin = document.getElementById('errCustGstin');
+
+                [nameField, phoneField, emailField, gstinField].forEach(function(el) {
+                    if(el) el.classList.remove('val-error');
+                });
+                [errName, errPhone, errEmail, errGstin].forEach(function(el) {
+                    if(el) el.style.display = 'none';
+                });
+
+                var nameVal = nameField.value.trim();
+                if (nameVal.length < 2) {
+                    nameField.classList.add('val-error');
+                    errName.style.display = 'block';
+                    isFormValid = false;
+                }
+
+                var phoneVal = phoneField.value.trim();
+                if (phoneVal !== "") {
+                    if (!/^\d{10}$/.test(phoneVal)) {
+                        phoneField.classList.add('val-error');
+                        errPhone.style.display = 'block';
+                        isFormValid = false;
+                    }
+                }
+
+                var emailVal = emailField.value.trim();
+                if (emailVal !== "") {
+                    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailPattern.test(emailVal)) {
+                        emailField.classList.add('val-error');
+                        errEmail.style.display = 'block';
+                        isFormValid = false;
+                    }
+                }
+
+                var gstinVal = gstinField.value.trim().toUpperCase();
+                if (gstinVal !== "") {
+                    var gstinPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+                    if (!gstinPattern.test(gstinVal)) {
+                        gstinField.classList.add('val-error');
+                        errGstin.style.display = 'block';
+                        isFormValid = false;
+                    }
+                }
+
+                if (!isFormValid) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
