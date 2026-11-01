@@ -32,16 +32,14 @@ def get_db_connection():
         password=os.getenv("MYSQLPASSWORD", "root123"),
         database=os.getenv("MYSQLDATABASE", "billnova"),
         port=int(os.getenv("MYSQLPORT", 3306)),
-        ssl_disabled=False
+        ssl_disabled=False,
+        ssl_verify_identity=False
     )
-    # Strict mode ko session level par disable karne ke liye line add ki hai
     cursor = conn.cursor()
     cursor.execute("SET SESSION sql_mode=''")
     cursor.close()
 
     return conn
-
-
 # =========================================================
 # UPLOAD CONFIGURATION
 # =========================================================
